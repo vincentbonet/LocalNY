@@ -2,7 +2,14 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
 import Footer from './components/layout/Footer';
-
+import Home from './pages/Home';
+import Federal from './pages/Federal';
+import Statewide from './pages/Statewide';
+import StateLegislature from './pages/StateLegislature';
+import NYC from './pages/NYC';
+import Metro from './pages/Metro';
+import County from './pages/County';
+import Local from './pages/Local';
 
 export default function App() {
   return (
