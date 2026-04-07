@@ -1,24 +1,15 @@
-import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { lookupByAddress } from '../lib/api';
-import type { OfficialGroup } from '../lib/api';
 
 export function useDistrict() {
-  const [data, setData] = useState<OfficialGroup[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { data = [], isPending, error, mutate: lookup } = useMutation({
+    mutationFn: lookupByAddress,
+  });
 
-  async function lookup(address: string) {
-    setLoading(true);
-    setError(null);
-    try {
-      const result = await lookupByAddress(address);
-      setData(result);
-    } catch (e: any) {
-      setError(e.message ?? 'Lookup failed');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return { data, loading, error, lookup };
+  return {
+    data,
+    loading: isPending,
+    error: error?.message ?? null,
+    lookup,
+  };
 }

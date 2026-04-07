@@ -4,7 +4,7 @@ import Spinner from '../components/ui/Spinner';
 import Badge from '../components/ui/Badge';
 
 export default function Federal() {
-  const { data, loading, error } = useOfficials(fetchNYFederalLegislators);
+  const { data = [], isLoading, error } = useOfficials(fetchNYFederalLegislators, 'federal');
 
   const senate = data.filter((l) => l.chamber === 'U.S. Senate');
   const house = data.filter((l) => l.chamber === 'U.S. House');
@@ -13,10 +13,10 @@ export default function Federal() {
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-8">Federal — New York</h1>
 
-      {loading && <Spinner />}
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {isLoading && <Spinner />}
+      {error && <p className="text-red-500 text-sm">{error.message}</p>}
 
-      {!loading && (
+      {!isLoading && (
         <>
           <section className="mb-10">
             <h2 className="text-lg font-semibold text-indigo-700 border-b-2 border-indigo-200 pb-2 mb-4">

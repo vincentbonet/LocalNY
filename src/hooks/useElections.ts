@@ -7,7 +7,7 @@ export function useElections(level?: string) {
 
   useEffect(() => {
     setLoading(true);
-    // TODO: fetch from NY BOE or Google Civic
+    // TODO: fetch from NY BOE
     setRaces([]);
     setLoading(false);
   }, [level]);
