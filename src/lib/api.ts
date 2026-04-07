@@ -159,3 +159,22 @@ export async function lookupNYCCouncilDistrict(address: string): Promise<NYCCoun
     borough: parsed.borough,
   };
 }
+
+export async function lookupCongressionalDistrict(lat: number, lng: number): Promise<string | null> {
+  const { data } = await axios.get(
+    'https://geocoding.geo.census.gov/geocoder/geographies/coordinates',
+    {
+      params: {
+        x: lng,
+        y: lat,
+        benchmark: 'Public_AR_Current',
+        vintage: 'Current_Current',
+        layers: 'Congressional Districts',
+        format: 'json',
+      },
+    }
+  );
+  const districts = data.result?.geographies?.['Congressional Districts'];
+  if (!districts?.length) return null;
+  return districts[0].BASENAME;
+}

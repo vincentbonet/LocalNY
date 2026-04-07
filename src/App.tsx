@@ -10,6 +10,7 @@ import NYC from './pages/NYC';
 import Metro from './pages/Metro';
 import County from './pages/County';
 import Local from './pages/Local';
+import Midterm from './pages/Midterm';
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
               <Route path="/metro" element={<Metro />} />
               <Route path="/county" element={<County />} />
               <Route path="/local" element={<Local />} />
+              <Route path="/midterm" element={<Midterm />} />
             </Routes>
           </main>
         </div>

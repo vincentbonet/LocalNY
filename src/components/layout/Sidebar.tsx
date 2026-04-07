@@ -9,6 +9,7 @@ const links = [
   { to: '/metro', label: 'Metro Area' },
   { to: '/county', label: 'County' },
   { to: '/local', label: 'Local' },
+  { to: '/midterm', label: '2026 Midterms' },
 ];
 
 export default function Sidebar() {
