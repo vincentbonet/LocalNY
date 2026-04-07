@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { lookupByAddress, parseRepresentatives } from '../lib/api';
+import { lookupByAddress } from '../lib/api';
 import type { OfficialGroup } from '../lib/api';
 
 export function useDistrict() {
@@ -12,7 +12,7 @@ export function useDistrict() {
     setError(null);
     try {
       const result = await lookupByAddress(address);
-      setData(parseRepresentatives(result));
+      setData(result);
     } catch (e: any) {
       setError(e.message ?? 'Lookup failed');
     } finally {
