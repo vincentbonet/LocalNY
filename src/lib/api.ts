@@ -110,3 +110,52 @@ export async function fetchNYFederalLegislators(): Promise<Legislator[]> {
     website: p.links?.[0]?.url,
   }));
 }
+export interface NYCCouncilLookup {
+  district: number;
+  borough: string;
+}
+
+function parseNYCAddress(address: string): { houseNumber: string; street: string; borough: string } | null {
+  const boroughMap: Record<string, string> = {
+    'manhattan': 'manhattan',
+    'bronx': 'bronx',
+    'brooklyn': 'brooklyn',
+    'queens': 'queens',
+    'staten island': 'statenisland',
+  };
+
+  const lower = address.toLowerCase();
+  let borough = '';
+  for (const [name, code] of Object.entries(boroughMap)) {
+    if (lower.includes(name)) { borough = code; break; }
+  }
+  if (!borough) return null;
+
+  const match = address.match(/^(\d+)\s+(.+?)(?:,|$)/i);
+  if (!match) return null;
+
+  return { houseNumber: match[1], street: match[2].trim(), borough };
+}
+
+export async function lookupNYCCouncilDistrict(address: string): Promise<NYCCouncilLookup | null> {
+  const parsed = parseNYCAddress(address);
+  if (!parsed) return null;
+
+  const { data } = await axios.get('https://api.nyc.gov/geo/geoclient/v2/address.json', {
+    params: {
+      houseNumber: parsed.houseNumber,
+      street: parsed.street,
+      borough: parsed.borough,
+      app_id: import.meta.env.VITE_NYC_GEOCLIENT_APP_ID,
+      app_key: import.meta.env.VITE_NYC_GEOCLIENT_APP_KEY,
+    },
+  });
+
+  const result = data.address;
+  if (!result?.councilDistrict) return null;
+
+  return {
+    district: parseInt(result.councilDistrict),
+    borough: parsed.borough,
+  };
+}
