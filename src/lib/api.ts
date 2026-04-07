@@ -61,3 +61,52 @@ export async function lookupNYLegislators(district: number, chamber: 'upper' | '
   });
   return data;
 }
+
+export interface Legislator {
+  name: string; 
+  party: string;
+  district: string, 
+  chamber: string, 
+  imageUrl?: string;
+  website?: string;
+}
+
+export async function fetchNYLegislators(chamber: 'upper' | 'lower'): Promise<Legislator[]> {
+  const { data } = await openStatesApi.get('/people', {
+    params: {
+      jurisdiction: 'ocd-jurisdiction/country:us/state:ny/government',
+      org_classification: chamber,
+      per_page: 100,
+      include: 'links',
+    },
+  });
+
+    return (data.results ?? []).map((p: any) => ({
+    name: p.name,
+    party: p.party ?? 'Unknown',
+    district: p.current_role?.district ?? '?',
+    chamber: chamber === 'upper' ? 'Senate' : 'Assembly',
+    imageUrl: p.image,
+    website: p.links?.[0]?.url,
+  }));
+}
+
+export async function fetchNYFederalLegislators(): Promise<Legislator[]> {
+  const { data } = await openStatesApi.get('/people', {
+    params: {
+      jurisdiction: 'ocd-jurisdiction/country:us/government',
+      state: 'ny',
+      per_page: 100,
+      include: 'links',
+    },
+  });
+
+  return (data.results ?? []).map((p: any) => ({
+    name: p.name,
+    party: p.party ?? 'Unknown',
+    district: p.current_role?.district ?? 'Statewide',
+    chamber: p.current_role?.org_classification === 'upper' ? 'U.S. Senate' : 'U.S. House',
+    imageUrl: p.image,
+    website: p.links?.[0]?.url,
+  }));
+}
