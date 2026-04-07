@@ -3,9 +3,6 @@ import type { Official } from '../types/official';
 
 export const openStatesApi = axios.create({
   baseURL: 'https://v3.openstates.org',
-  headers: {
-    'X-API-KEY': import.meta.env.VITE_OPENSTATES_API_KEY,
-  },
 });
 
 async function geocodeAddress(address: string): Promise<{ lat: number; lng: number }> {
@@ -25,7 +22,7 @@ export interface OfficialGroup {
 export async function lookupByAddress(address: string): Promise<OfficialGroup[]> {
   const { lat, lng } = await geocodeAddress(address);
   const { data } = await openStatesApi.get('/people.geo', {
-    params: { lat, lng },
+    params: { lat, lng, apikey: import.meta.env.VITE_OPENSTATES_API_KEY },
   });
   return parseOpenStatesResponse(data);
 }
@@ -57,6 +54,7 @@ export async function lookupNYLegislators(district: number, chamber: 'upper' | '
       jurisdiction: 'ocd-jurisdiction/country:us/state:ny/government',
       district,
       org_classification: chamber,
+      apikey: import.meta.env.VITE_OPENSTATES_API_KEY,
     },
   });
   return data;
@@ -76,8 +74,9 @@ export async function fetchNYLegislators(chamber: 'upper' | 'lower'): Promise<Le
     params: {
       jurisdiction: 'ocd-jurisdiction/country:us/state:ny/government',
       org_classification: chamber,
-      per_page: 100,
+      per_page: 50,
       include: 'links',
+      apikey: import.meta.env.VITE_OPENSTATES_API_KEY,
     },
   });
 
@@ -96,8 +95,9 @@ export async function fetchNYFederalLegislators(): Promise<Legislator[]> {
     params: {
       jurisdiction: 'ocd-jurisdiction/country:us/government',
       state: 'ny',
-      per_page: 100,
+      per_page: 50,
       include: 'links',
+      apikey: import.meta.env.VITE_OPENSTATES_API_KEY
     },
   });
 
