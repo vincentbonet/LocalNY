@@ -1,6 +1,7 @@
 import SearchBar from '../components/ui/SearchBar';
 import { useDistrict } from '../hooks/useDistrict';
 import Spinner from '../components/ui/Spinner';
+import Badge from '../components/ui/Badge';
 
 export default function Home() {
   const { data, loading, error, lookup } = useDistrict();
@@ -14,10 +15,51 @@ export default function Home() {
       <SearchBar onSearch={lookup} placeholder="Enter your NY address..." />
       {loading && <Spinner />}
       {error && <p className="mt-4 text-red-500 text-sm">{error}</p>}
-      {data && (
-        <pre className="mt-6 bg-gray-50 p-4 rounded text-xs overflow-auto">
-          {JSON.stringify(data, null, 2)}
-        </pre>
+      {data.length > 0 && (
+        <div className="mt-8 flex flex-col gap-6">
+          {data.map((group) => (
+            <div key={group.office}>
+              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                {group.office}
+              </h2>
+              <div className="flex flex-col gap-2">
+                {group.officials.map((official) => (
+                  <div
+                    key={official.name}
+                    className="flex items-center gap-3 border border-gray-200 rounded-lg p-3"
+                  >
+                    {official.photoUrl && (
+                      <img
+                        src={official.photoUrl}
+                        alt={official.name}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <Badge party={official.party} />
+                        <span className="font-medium text-sm">{official.name}</span>
+                      </div>
+                      {official.phone && (
+                        <p className="text-xs text-gray-400 mt-0.5">{official.phone}</p>
+                      )}
+                    </div>
+                    {official.website && (
+                      <a
+                        href={official.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs text-blue-600 hover:underline"
+                      >
+                        Website
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
