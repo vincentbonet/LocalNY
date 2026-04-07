@@ -4,8 +4,8 @@ import Spinner from '../components/ui/Spinner';
 import Badge from '../components/ui/Badge';
 
 export default function StateLegislature() {
-  const senate = useOfficials(() => fetchNYLegislators('upper'));
-  const assembly = useOfficials(() => fetchNYLegislators('lower'));
+  const senate = useOfficials(() => fetchNYLegislators('upper'), 'senate');
+  const assembly = useOfficials(() => fetchNYLegislators('lower'), 'assembly');
 
   return (
     <div>
@@ -15,10 +15,10 @@ export default function StateLegislature() {
         <h2 className="text-lg font-semibold text-blue-700 border-b-2 border-blue-200 pb-2 mb-4">
           State Senate — 63 seats
         </h2>
-        {senate.loading && <Spinner />}
-        {senate.error && <p className="text-red-500 text-sm">{senate.error}</p>}
+        {senate.isLoading && <Spinner />}
+        {senate.error && <p className="text-red-500 text-sm">{senate.error.message}</p>}
         <div className="grid grid-cols-1 gap-2">
-          {senate.data.map((leg) => (
+          {(senate.data ?? []).map((leg) => (
             <LegislatorRow key={leg.name} leg={leg} />
           ))}
         </div>
@@ -26,12 +26,12 @@ export default function StateLegislature() {
 
       <section>
         <h2 className="text-lg font-semibold text-green-700 border-b-2 border-green-200 pb-2 mb-4">
-          State Assembly — 150 seats (showing first 100)
+          State Assembly — 150 seats (showing first 50)
         </h2>
-        {assembly.loading && <Spinner />}
-        {assembly.error && <p className="text-red-500 text-sm">{assembly.error}</p>}
+        {assembly.isLoading && <Spinner />}
+        {assembly.error && <p className="text-red-500 text-sm">{assembly.error.message}</p>}
         <div className="grid grid-cols-1 gap-2">
-          {assembly.data.map((leg) => (
+          {(assembly.data ?? []).map((leg) => (
             <LegislatorRow key={leg.name} leg={leg} />
           ))}
         </div>
