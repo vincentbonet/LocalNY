@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 
 const links = [
   { to: '/', label: 'Home' },
+  { to: '/map', label: 'District Map' },
   { to: '/federal', label: 'Federal' },
   { to: '/statewide', label: 'Statewide' },
   { to: '/state-legislature', label: 'State Legislature' },
@@ -10,6 +11,7 @@ const links = [
   { to: '/county', label: 'County' },
   { to: '/local', label: 'Local' },
   { to: '/midterm', label: '2026 Midterms' },
+  { to: '/map', label: 'District Map' },
 ];
 
 export default function Sidebar() {

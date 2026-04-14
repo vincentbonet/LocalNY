@@ -11,6 +11,7 @@ import Metro from './pages/Metro';
 import County from './pages/County';
 import Local from './pages/Local';
 import Midterm from './pages/Midterm';
+import MapView from './pages/MapView';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <main className="flex-1 p-6">
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/map" element={<MapView />} />
               <Route path="/federal" element={<Federal />} />
               <Route path="/statewide" element={<Statewide />} />
               <Route path="/state-legislature" element={<StateLegislature />} />
