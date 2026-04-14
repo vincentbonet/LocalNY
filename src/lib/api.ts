@@ -178,3 +178,9 @@ export async function lookupCongressionalDistrict(lat: number, lng: number): Pro
   if (!districts?.length) return null;
   return districts[0].BASENAME;
 }
+export async function fetchCongressionalDistrictGeoJSON(): Promise<GeoJSON.FeatureCollection> {
+  const res = await fetch('/ny-congressional.geojson');
+  if (!res.ok) throw new Error('Failed to load district boundaries');
+  return res.json();
+}
+
