@@ -5,7 +5,7 @@ export const openStatesApi = axios.create({
   baseURL: 'https://v3.openstates.org',
 });
 
-async function geocodeAddress(address: string): Promise<{ lat: number; lng: number }> {
+export async function geocodeAddress(address: string): Promise<{ lat: number; lng: number }> {
   const { data } = await axios.get('https://nominatim.openstreetmap.org/search', {
     params: { q: address, format: 'json', limit: 1 },
     headers: { 'Accept-Language': 'en' },
@@ -22,7 +22,12 @@ export interface OfficialGroup {
 export async function lookupByAddress(address: string): Promise<OfficialGroup[]> {
   const { lat, lng } = await geocodeAddress(address);
   const { data } = await openStatesApi.get('/people.geo', {
-    params: { lat, lng, apikey: import.meta.env.VITE_OPENSTATES_API_KEY },
+    params: {
+      lat,
+      lng,
+      apikey: import.meta.env.VITE_OPENSTATES_API_KEY,
+      include: 'contact_details,links',
+    },
   });
   return parseOpenStatesResponse(data);
 }
@@ -42,6 +47,8 @@ function parseOpenStatesResponse(data: any): OfficialGroup[] {
       party: person.party ?? 'Unknown',
       website: person.links?.[0]?.url,
       photoUrl: person.image,
+      phone: person.contact_details?.find((c: any) => c.type === 'voice')?.value,
+      email: person.contact_details?.find((c: any) => c.type === 'email')?.value,
     } satisfies Official);
   }
 
@@ -61,10 +68,10 @@ export async function lookupNYLegislators(district: number, chamber: 'upper' | '
 }
 
 export interface Legislator {
-  name: string; 
+  name: string;
   party: string;
-  district: string, 
-  chamber: string, 
+  district: string;
+  chamber: string;
   imageUrl?: string;
   website?: string;
 }
@@ -80,7 +87,7 @@ export async function fetchNYLegislators(chamber: 'upper' | 'lower'): Promise<Le
     },
   });
 
-    return (data.results ?? []).map((p: any) => ({
+  return (data.results ?? []).map((p: any) => ({
     name: p.name,
     party: p.party ?? 'Unknown',
     district: p.current_role?.district ?? '?',
@@ -97,7 +104,7 @@ export async function fetchNYFederalLegislators(): Promise<Legislator[]> {
       state: 'ny',
       per_page: 50,
       include: 'links',
-      apikey: import.meta.env.VITE_OPENSTATES_API_KEY
+      apikey: import.meta.env.VITE_OPENSTATES_API_KEY,
     },
   });
 
@@ -110,6 +117,7 @@ export async function fetchNYFederalLegislators(): Promise<Legislator[]> {
     website: p.links?.[0]?.url,
   }));
 }
+
 export interface NYCCouncilLookup {
   district: number;
   borough: string;
@@ -178,5 +186,3 @@ export async function lookupCongressionalDistrict(lat: number, lng: number): Pro
   if (!districts?.length) return null;
   return districts[0].BASENAME;
 }
-
-

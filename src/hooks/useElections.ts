@@ -1,16 +1,10 @@
-import { useState, useEffect } from 'react';
+import { houseRaces2026 } from '../data/midterm-2026';
 import type { Race } from '../types/race';
 
-export function useElections(level?: string) {
-  const [races, setRaces] = useState<Race[]>([]);
-  const [loading, setLoading] = useState(false);
+export function useElections(level?: string): { races: Race[]; loading: false } {
+  const races = level
+    ? houseRaces2026.filter((r) => r.level === level)
+    : houseRaces2026;
 
-  useEffect(() => {
-    setLoading(true);
-    // TODO: fetch from NY BOE
-    setRaces([]);
-    setLoading(false);
-  }, [level]);
-
-  return { races, loading };
+  return { races, loading: false };
 }

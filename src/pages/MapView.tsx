@@ -1,38 +1,118 @@
-import { MapContainer, TileLayer, ZoomControl, WMSTileLayer } from 'react-leaflet';
-import { partyColor } from '../lib/utils';
+import { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, ZoomControl, WMSTileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { useMutation } from '@tanstack/react-query';
+import L from 'leaflet';
+import { geocodeAddress, lookupByAddress } from '../lib/api';
+import type { OfficialGroup } from '../lib/api';
+import SearchBar from '../components/ui/SearchBar';
+import Spinner from '../components/ui/Spinner';
+import Badge from '../components/ui/Badge';
+
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIcon2x,
+  shadowUrl: markerShadow,
+});
 
 const NY_CENTER: [number, number] = [42.9538, -75.5268];
 const NY_ZOOM = 7;
 
+function FlyTo({ coords }: { coords: [number, number] }) {
+  const map = useMap();
+  useEffect(() => { map.flyTo(coords, 12); }, [coords]);
+  return null;
+}
+
 export default function MapView() {
+  const [coords, setCoords] = useState<[number, number] | null>(null);
+  const [groups, setGroups] = useState<OfficialGroup[]>([]);
+
+  const { mutate: search, isPending, error } = useMutation({
+    mutationFn: async (address: string) => {
+      const [geo, reps] = await Promise.all([
+        geocodeAddress(address),
+        lookupByAddress(address),
+      ]);
+      return { geo, reps };
+    },
+    onSuccess: ({ geo, reps }) => {
+      setCoords([geo.lat, geo.lng]);
+      setGroups(reps);
+    },
+  });
+
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col flex-1">
       <div className="mb-4">
         <h1 className="text-2xl font-bold text-gray-900">District Map</h1>
-        <p className="text-gray-500 text-sm mt-1">NY Congressional Districts. Enter your address on the Home page to find your district.</p>
+        <p className="text-gray-500 text-sm mt-1">Enter your address to see your representatives.</p>
       </div>
 
-      <div className="flex-1 rounded-lg overflow-hidden border border-gray-200" style={{ minHeight: '600px' }}>
-        <MapContainer
-          center={NY_CENTER}
-          zoom={NY_ZOOM}
-          style={{ height: '100%', width: '100%' }}
-          zoomControl={false}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <WMSTileLayer
-            url="https://tigerweb.geo.census.gov/arcgis/services/TIGERweb/Legislative/MapServer/WMSServer"
-            layers="12"
-            format="image/png"
-            transparent={true}
-            opacity={0.6}
-            attribution="US Census Bureau"
-          />
-          <ZoomControl position="bottomright" />
-        </MapContainer>
+      <div className="mb-4 flex gap-4 items-start">
+        <div className="flex-1 max-w-sm">
+          <SearchBar onSearch={search} placeholder="Enter your NY address..." />
+        </div>
+        {isPending && <Spinner />}
+        {error && <p className="text-red-500 text-sm mt-2">{(error as Error).message}</p>}
+      </div>
+
+      <div className="flex gap-4 flex-1" style={{ minHeight: '540px' }}>
+        <div className="flex-1 rounded-lg overflow-hidden border border-gray-200">
+          <MapContainer
+            center={NY_CENTER}
+            zoom={NY_ZOOM}
+            style={{ height: '100%', width: '100%' }}
+            zoomControl={false}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <WMSTileLayer
+              url="https://tigerweb.geo.census.gov/arcgis/services/TIGERweb/Legislative/MapServer/WMSServer"
+              layers="12"
+              format="image/png"
+              transparent={true}
+              opacity={0.6}
+              attribution="US Census Bureau"
+            />
+            <ZoomControl position="bottomright" />
+            {coords && (
+              <>
+                <FlyTo coords={coords} />
+                <Marker position={coords}>
+                  <Popup>Your address</Popup>
+                </Marker>
+              </>
+            )}
+          </MapContainer>
+        </div>
+
+        {groups.length > 0 && (
+          <div className="w-64 border border-gray-200 rounded-lg p-4 overflow-y-auto shrink-0">
+            <h2 className="font-semibold text-gray-900 mb-4">Your Representatives</h2>
+            <div className="flex flex-col gap-4">
+              {groups.map((group) => (
+                <div key={group.office}>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+                    {group.office}
+                  </p>
+                  {group.officials.map((o) => (
+                    <div key={o.name} className="flex items-center gap-2">
+                      <Badge party={o.party} />
+                      <span className="text-sm font-medium">{o.name}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
