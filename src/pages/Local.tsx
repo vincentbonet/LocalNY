@@ -1,19 +1,67 @@
-import { officesByLevel } from '../data/offices';
+import { useMutation } from '@tanstack/react-query';
+import { lookupByAddress } from '../lib/api';
+import SearchBar from '../components/ui/SearchBar';
+import Spinner from '../components/ui/Spinner';
+import Badge from '../components/ui/Badge';
 
 export default function Local() {
-  const offices = officesByLevel('local');
+  const { data: groups = [], mutate: lookup, isPending, error } = useMutation({
+    mutationFn: lookupByAddress,
+  });
+
+  const localGroups = groups.filter((g) => {
+    const o = g.office.toLowerCase();
+    return !o.includes('representative') && !o.includes('congress') &&
+           !o.includes('senator') && !o.includes('assembly');
+  });
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Federal Offices</h1>
-      <div className="grid gap-4">
-        {offices.map((o) => (
-          <div key={o.id} className="border border-gray-200 rounded-lg p-4">
-            <h2 className="font-semibold">{o.title}</h2>
-            <p className="text-sm text-gray-500">{o.description}</p>
-            <p className="text-xs text-gray-400 mt-1">{o.seats} seat{o.seats !== 1 ? 's' : ''} · {o.termYears}-year term</p>
-          </div>
-        ))}
-      </div>
+    <div className="max-w-2xl mx-auto">
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">Local Government</h1>
+      <p className="text-gray-500 mb-8">
+        Enter your NY address to find your local elected officials.
+      </p>
+
+      <SearchBar onSearch={lookup} placeholder="Enter your NY address..." />
+
+      {isPending && <Spinner />}
+      {error && <p className="mt-4 text-red-500 text-sm">{(error as Error).message}</p>}
+
+      {groups.length > 0 && localGroups.length === 0 && (
+        <p className="mt-8 text-gray-400 text-sm">No additional local officials found for this address.</p>
+      )}
+
+      {localGroups.length > 0 && (
+        <div className="mt-8 flex flex-col gap-6">
+          {localGroups.map((group) => (
+            <div key={group.office}>
+              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                {group.office}
+              </h2>
+              <div className="flex flex-col gap-2">
+                {group.officials.map((official) => (
+                  <div key={official.name} className="flex items-center gap-3 border border-gray-200 rounded-lg p-3">
+                    {official.photoUrl && (
+                      <img src={official.photoUrl} alt={official.name} className="w-10 h-10 rounded-full object-cover" />
+                    )}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <Badge party={official.party} />
+                        <span className="font-medium text-sm">{official.name}</span>
+                      </div>
+                    </div>
+                    {official.website && (
+                      <a href={official.website} target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline">
+                        Website
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
