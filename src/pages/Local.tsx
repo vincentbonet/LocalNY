@@ -1,12 +1,23 @@
 import { useMutation } from '@tanstack/react-query';
-import { lookupByAddress } from '../lib/api';
+import { lookupByAddress, lookupNYCCouncilMember } from '../lib/api';
+import { councilMembers } from '../data/nyc-council-members';
 import SearchBar from '../components/ui/SearchBar';
 import Spinner from '../components/ui/Spinner';
 import Badge from '../components/ui/Badge';
+import { useState } from 'react';
 
 export default function Local() {
+  const [councilDistrict, setCouncilDistrict] = useState<number | null>(null);
+
   const { data: groups = [], mutate: lookup, isPending, error } = useMutation({
-    mutationFn: lookupByAddress,
+    mutationFn: async (address: string) => {
+      const [reps, district] = await Promise.all([
+        lookupByAddress(address),
+        lookupNYCCouncilMember(address),
+      ]);
+      setCouncilDistrict(district);
+      return reps;
+    },
   });
 
   const localGroups = groups.filter((g) => {
@@ -14,6 +25,8 @@ export default function Local() {
     return !o.includes('representative') && !o.includes('congress') &&
            !o.includes('senator') && !o.includes('assembly');
   });
+
+  const councilMember = councilDistrict ? councilMembers[councilDistrict] : null;
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -27,7 +40,29 @@ export default function Local() {
       {isPending && <Spinner />}
       {error && <p className="mt-4 text-red-500 text-sm">{(error as Error).message}</p>}
 
-      {groups.length > 0 && localGroups.length === 0 && (
+      {councilMember && (
+        <div className="mt-8">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">
+            NYC Council — District {councilDistrict}
+          </h2>
+          <div className="flex items-center gap-3 border border-gray-200 rounded-lg p-3">
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <Badge party={councilMember.party} />
+                <span className="font-medium text-sm">{councilMember.name}</span>
+              </div>
+              <p className="text-xs text-gray-400 mt-0.5">{councilMember.borough}</p>
+            </div>
+            {councilMember.website && (
+              <a href={councilMember.website} target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline">
+                Website
+              </a>
+            )}
+          </div>
+        </div>
+      )}
+
+      {groups.length > 0 && localGroups.length === 0 && !councilMember && (
         <p className="mt-8 text-gray-400 text-sm">No additional local officials found for this address.</p>
       )}
 

@@ -186,3 +186,30 @@ export async function lookupCongressionalDistrict(lat: number, lng: number): Pro
   if (!districts?.length) return null;
   return districts[0].BASENAME;
 }
+
+export async function lookupNYCCouncilDistrictByCoords(lat: number, lng: number): Promise<number | null> {
+  try {
+    const { data } = await axios.get(
+      'https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_City_Council_Districts/FeatureServer/0/query',
+      {
+        params: {
+          geometry: `${lng},${lat}`,
+          geometryType: 'esriGeometryPoint',
+          inSR: '4326',
+          spatialRel: 'esriSpatialRelIntersects',
+          outFields: 'CounDist',
+          f: 'json',
+        },
+      }
+    );
+    return data.features?.[0]?.attributes?.CounDist ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function lookupNYCCouncilMember(address: string): Promise<number | null> {
+  const { lat, lng } = await geocodeAddress(address);
+  return lookupNYCCouncilDistrictByCoords(lat, lng);
+}
+

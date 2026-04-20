@@ -3,10 +3,11 @@ import { useState } from 'react';
 interface Props {
   onSearch: (query: string) => void;
   placeholder?: string;
+  defaultValue?: string;
 }
 
-export default function SearchBar({ onSearch, placeholder = 'Enter your address...' }: Props) {
-  const [value, setValue] = useState('');
+export default function SearchBar({ onSearch, placeholder = 'Enter your address...', defaultValue = '' }: Props) {
+  const [value, setValue] = useState(defaultValue);
 
   return (
     <div className="flex gap-2">

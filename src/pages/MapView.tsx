@@ -22,6 +22,12 @@ L.Icon.Default.mergeOptions({
 const NY_CENTER: [number, number] = [42.9538, -75.5268];
 const NY_ZOOM = 7;
 
+const LAYERS = [
+  { label: 'Congressional', id: '12' },
+  { label: 'State Senate',  id: '14' },
+  { label: 'Assembly',      id: '16' },
+] as const;
+
 function FlyTo({ coords }: { coords: [number, number] }) {
   const map = useMap();
   useEffect(() => { map.flyTo(coords, 12); }, [coords]);
@@ -31,6 +37,7 @@ function FlyTo({ coords }: { coords: [number, number] }) {
 export default function MapView() {
   const [coords, setCoords] = useState<[number, number] | null>(null);
   const [groups, setGroups] = useState<OfficialGroup[]>([]);
+  const [activeLayer, setActiveLayer] = useState<string>('12');
 
   const { mutate: search, isPending, error } = useMutation({
     mutationFn: async (address: string) => {
@@ -53,12 +60,27 @@ export default function MapView() {
         <p className="text-gray-500 text-sm mt-1">Enter your address to see your representatives.</p>
       </div>
 
-      <div className="mb-4 flex gap-4 items-start">
+      <div className="mb-4 flex flex-wrap gap-4 items-center">
         <div className="flex-1 max-w-sm">
           <SearchBar onSearch={search} placeholder="Enter your NY address..." />
         </div>
+        <div className="flex gap-1">
+          {LAYERS.map((layer) => (
+            <button
+              key={layer.id}
+              onClick={() => setActiveLayer(layer.id)}
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                activeLayer === layer.id
+                  ? 'bg-gray-900 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {layer.label}
+            </button>
+          ))}
+        </div>
         {isPending && <Spinner />}
-        {error && <p className="text-red-500 text-sm mt-2">{(error as Error).message}</p>}
+        {error && <p className="text-red-500 text-sm">{(error as Error).message}</p>}
       </div>
 
       <div className="flex gap-4 flex-1" style={{ minHeight: '540px' }}>
@@ -74,8 +96,9 @@ export default function MapView() {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <WMSTileLayer
+              key={activeLayer}
               url="https://tigerweb.geo.census.gov/arcgis/services/TIGERweb/Legislative/MapServer/WMSServer"
-              layers="12"
+              layers={activeLayer}
               format="image/png"
               transparent={true}
               opacity={0.6}
