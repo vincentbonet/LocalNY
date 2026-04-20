@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useState } from 'react';
 import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
 import Footer from './components/layout/Footer';
@@ -14,13 +15,15 @@ import Midterm from './pages/Midterm';
 import MapView from './pages/MapView';
 
 export default function App() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <BrowserRouter>
       <div className="min-h-screen flex flex-col">
-        <Header />
+        <Header onMenuToggle={() => setMenuOpen((o) => !o)} menuOpen={menuOpen} />
         <div className="flex flex-1">
-          <Sidebar />
-          <main className="flex-1 p-6">
+          <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
+          <main className="flex-1 p-6 flex flex-col">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/map" element={<MapView />} />
