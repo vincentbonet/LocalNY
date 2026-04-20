@@ -19,13 +19,7 @@ export const metroAgencies: MetroAgency[] = [
     website: 'https://www.mta.info',
     officials: [
       { name: 'Janno Lieber',     title: 'Chair & CEO',          appointedBy: 'Governor' },
-      { name: 'TBD',              title: 'Board Member',         appointedBy: 'Governor' },
-      { name: 'TBD',              title: 'Board Member',         appointedBy: 'NYC Mayor' },
-      { name: 'TBD',              title: 'Board Member',         appointedBy: 'Nassau County' },
-      { name: 'TBD',              title: 'Board Member',         appointedBy: 'Suffolk County' },
-      { name: 'TBD',              title: 'Board Member',         appointedBy: 'Westchester County' },
-      { name: 'TBD',              title: 'Board Member',         appointedBy: 'Rockland County' },
-      { name: 'TBD',              title: 'Board Member',         appointedBy: 'Dutchess/Orange/Putnam Counties' },
+      { name: 'See mta.info/about/board', title: 'Board Members — 14 seats', appointedBy: 'Governor, NYC Mayor, and suburban county executives' },
     ],
   },
   {
@@ -33,8 +27,8 @@ export const metroAgencies: MetroAgency[] = [
     description: 'Operates bridges, tunnels, airports, and PATH train across the NY/NJ metro area.',
     website: 'https://www.panynj.gov',
     officials: [
-      { name: 'TBD', title: 'Executive Director',        appointedBy: 'NY & NJ Governors' },
-      { name: 'TBD', title: 'Chair (NY)',                appointedBy: 'NY Governor' },
+      { name: 'Kathyrn Garcia', title: 'Executive Director',        appointedBy: 'NY & NJ Governors' },
+      { name: 'Kevin O\'Toole', title: 'Chair (NY)',                appointedBy: 'NY Governor' },
       { name: 'TBD', title: 'Vice Chair (NJ)',           appointedBy: 'NJ Governor' },
       { name: 'TBD', title: 'NY Commissioner',          appointedBy: 'NY Governor' },
       { name: 'TBD', title: 'NY Commissioner',          appointedBy: 'NY Governor' },

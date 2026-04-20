@@ -11,7 +11,7 @@ export type NYRegion =
   | 'Western New York';
 
 export interface CountyExecutive {
-  name: string;
+  name?: string;
   title: string;
   party?: string;
   website?: string;

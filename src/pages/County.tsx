@@ -34,9 +34,9 @@ function CountyRow({ county }: { county: County }) {
       <div className="flex-1 min-w-0">
         <span className="font-medium text-sm">{county.name} County</span>
         {exec && (
-          <p className="text-xs text-gray-400 mt-0.5">
-            {exec.title}{exec.name !== 'TBD' ? ` · ${exec.name}` : ''}
-          </p>
+        <p className="text-xs text-gray-400 mt-0.5">
+          {exec.title}{exec.name ? ` · ${exec.name}` : ''}
+        </p>
         )}
       </div>
       {exec?.party && exec.name !== 'TBD' && <Badge party={exec.party} />}
