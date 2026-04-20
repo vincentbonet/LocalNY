@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import SearchBar from '../components/ui/SearchBar';
 import { useDistrict } from '../hooks/useDistrict';
 import Spinner from '../components/ui/Spinner';
+import { usePageTitle } from '../hooks/usePageTitle';
 import Badge from '../components/ui/Badge';
 
 export default function Home() {
+  usePageTitle('');
   const { data, loading, error, lookup } = useDistrict();
   const [lastAddress, setLastAddress] = useState('');
 

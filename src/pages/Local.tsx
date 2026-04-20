@@ -5,8 +5,10 @@ import SearchBar from '../components/ui/SearchBar';
 import Spinner from '../components/ui/Spinner';
 import Badge from '../components/ui/Badge';
 import { useState } from 'react';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function Local() {
+  usePageTitle('Local Government');
   const [councilDistrict, setCouncilDistrict] = useState<number | null>(null);
 
   const { data: groups = [], mutate: lookup, isPending, error } = useMutation({

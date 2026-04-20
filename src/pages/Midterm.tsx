@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useMutation } from '@tanstack/react-query';
 import { lookupByAddress } from '../lib/api';
 import type { OfficialGroup } from '../lib/api';
@@ -43,6 +44,7 @@ function buildRaces(groups: OfficialGroup[]): Race[] {
 }
 
 export default function Midterm() {
+  usePageTitle('2026 Midterm Elections');
   const [searchParams] = useSearchParams();
   const addressParam = searchParams.get('address') ?? '';
 

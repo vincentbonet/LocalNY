@@ -1,6 +1,8 @@
 import { officesByLevel } from '../data/offices';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function Metro() {
+  usePageTitle('Metro Agencies');
   const offices = officesByLevel('metro');
   return (
     <div>

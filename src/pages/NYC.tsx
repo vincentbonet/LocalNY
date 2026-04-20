@@ -1,9 +1,11 @@
 import { councilMembers } from '../data/nyc-council-members';
 import Badge from '../components/ui/Badge';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const boroughs = ['Manhattan', 'Bronx', 'Brooklyn', 'Queens', 'Staten Island'];
 
 export default function NYC() {
+  usePageTitle('NYC City Council');
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-2">NYC City Council</h1>

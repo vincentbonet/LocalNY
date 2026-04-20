@@ -7,6 +7,7 @@ import type { OfficialGroup } from '../lib/api';
 import SearchBar from '../components/ui/SearchBar';
 import Spinner from '../components/ui/Spinner';
 import Badge from '../components/ui/Badge';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -35,6 +36,7 @@ function FlyTo({ coords }: { coords: [number, number] }) {
 }
 
 export default function MapView() {
+  usePageTitle('District Map');
   const [coords, setCoords] = useState<[number, number] | null>(null);
   const [groups, setGroups] = useState<OfficialGroup[]>([]);
   const [activeLayer, setActiveLayer] = useState<string>('12');
@@ -83,8 +85,8 @@ export default function MapView() {
         {error && <p className="text-red-500 text-sm">{(error as Error).message}</p>}
       </div>
 
-      <div className="flex gap-4 flex-1" style={{ minHeight: '540px' }}>
-        <div className="flex-1 rounded-lg overflow-hidden border border-gray-200">
+      <div className="flex flex-col md:flex-row gap-4 flex-1" style={{ minHeight: '540px' }}>
+        <div className="flex-1 rounded-lg overflow-hidden border border-gray-200" style={{ minHeight: '400px' }}>
           <MapContainer
             center={NY_CENTER}
             zoom={NY_ZOOM}
@@ -117,7 +119,7 @@ export default function MapView() {
         </div>
 
         {groups.length > 0 && (
-          <div className="w-64 border border-gray-200 rounded-lg p-4 overflow-y-auto shrink-0">
+          <div className="w-full md:w-64 border border-gray-200 rounded-lg p-4 overflow-y-auto md:shrink-0">
             <h2 className="font-semibold text-gray-900 mb-4">Your Representatives</h2>
             <div className="flex flex-col gap-4">
               {groups.map((group) => (

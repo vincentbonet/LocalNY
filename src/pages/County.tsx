@@ -1,8 +1,10 @@
 import { counties, regions } from '../data/counties';
 import type { County } from '../data/counties';
 import Badge from '../components/ui/Badge';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function County() {
+  usePageTitle('County Government');
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-2">NY County Government</h1>

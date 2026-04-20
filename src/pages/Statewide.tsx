@@ -1,8 +1,10 @@
 import { statewideOfficials } from '../data/statewide-officials';
 import type { StatewideOfficial } from '../data/statewide-officials';
 import Badge from '../components/ui/Badge';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function Statewide() {
+  usePageTitle('Statewide Offices');
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-2">Statewide Offices</h1>

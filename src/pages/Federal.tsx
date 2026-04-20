@@ -2,8 +2,10 @@ import { fetchNYFederalLegislators } from '../lib/api';
 import { useOfficials } from '../hooks/useOfficials';
 import Spinner from '../components/ui/Spinner';
 import Badge from '../components/ui/Badge';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function Federal() {
+  usePageTitle('Federal Officials');
   const { data = [], isLoading, error } = useOfficials(fetchNYFederalLegislators, 'federal');
 
   const senate = data.filter((l) => l.chamber === 'U.S. Senate');

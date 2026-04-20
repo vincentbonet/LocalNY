@@ -13,6 +13,7 @@ import County from './pages/County';
 import Local from './pages/Local';
 import Midterm from './pages/Midterm';
 import MapView from './pages/MapView';
+import NotFound from './pages/NotFound';
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -35,6 +36,7 @@ export default function App() {
               <Route path="/county" element={<County />} />
               <Route path="/local" element={<Local />} />
               <Route path="/midterm" element={<Midterm />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
         </div>
