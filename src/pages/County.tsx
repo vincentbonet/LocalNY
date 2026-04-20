@@ -17,7 +17,7 @@ export default function County() {
             <h2 className="text-lg font-semibold text-gray-700 border-b-2 border-gray-200 pb-2 mb-4">
               {region}
             </h2>
-            <div className="grid grid-cols-1 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {regionCounties.map((county) => (
                 <CountyRow key={county.name} county={county} />
               ))}

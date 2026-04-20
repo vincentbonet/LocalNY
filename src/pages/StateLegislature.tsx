@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { fetchNYLegislators } from '../lib/api';
 import { useOfficials } from '../hooks/useOfficials';
 import Spinner from '../components/ui/Spinner';
@@ -6,21 +7,41 @@ import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function StateLegislature() {
   usePageTitle('State Legislature');
+  const [query, setQuery] = useState('');
   const senate = useOfficials(() => fetchNYLegislators('upper'), 'senate');
   const assembly = useOfficials(() => fetchNYLegislators('lower'), 'assembly');
 
+  function filter<T extends { name: string; district: string }>(list: T[]): T[] {
+    const q = query.toLowerCase();
+    return list
+      .sort((a, b) => parseInt(a.district) - parseInt(b.district))
+      .filter((l) => !q || l.name.toLowerCase().includes(q) || l.district.includes(q));
+  }
+
+  const senateList = filter(senate.data ?? []);
+  const assemblyList = filter(assembly.data ?? []);
+
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">NY State Legislature</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-1">NY State Legislature</h1>
+      <p className="text-gray-500 mb-6">63 State Senators and 150 Assembly Members.</p>
+
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search by name or district number..."
+        className="w-full max-w-sm border border-gray-300 rounded px-3 py-2 text-sm mb-8 focus:outline-none focus:ring-2 focus:ring-gray-900"
+      />
 
       <section className="mb-10">
         <h2 className="text-lg font-semibold text-blue-700 border-b-2 border-blue-200 pb-2 mb-4">
-          State Senate — 63 seats
+          State Senate{senateList.length > 0 && <span className="text-sm font-normal text-gray-400 ml-2">{senateList.length} members</span>}
         </h2>
         {senate.isLoading && <Spinner />}
         {senate.error && <p className="text-red-500 text-sm">{senate.error.message}</p>}
         <div className="grid grid-cols-1 gap-2">
-          {(senate.data ?? []).map((leg) => (
+          {senateList.map((leg) => (
             <LegislatorRow key={leg.name} leg={leg} />
           ))}
         </div>
@@ -28,12 +49,12 @@ export default function StateLegislature() {
 
       <section>
         <h2 className="text-lg font-semibold text-green-700 border-b-2 border-green-200 pb-2 mb-4">
-          State Assembly — 150 seats (showing first 50)
+          State Assembly{assemblyList.length > 0 && <span className="text-sm font-normal text-gray-400 ml-2">{assemblyList.length} members</span>}
         </h2>
         {assembly.isLoading && <Spinner />}
         {assembly.error && <p className="text-red-500 text-sm">{assembly.error.message}</p>}
         <div className="grid grid-cols-1 gap-2">
-          {(assembly.data ?? []).map((leg) => (
+          {assemblyList.map((leg) => (
             <LegislatorRow key={leg.name} leg={leg} />
           ))}
         </div>

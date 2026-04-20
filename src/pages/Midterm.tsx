@@ -70,11 +70,27 @@ export default function Midterm() {
       {isPending && <Spinner />}
       {error && <p className="mt-4 text-red-500 text-sm">{(error as Error).message}</p>}
 
-      <div className="mt-8 flex flex-col gap-4">
-        {races.map((race) => (
-          <RaceCard key={race.id} race={race} />
-        ))}
-      </div>
+      {races.length > 0 && (
+        <div className="mt-8 flex flex-col gap-8">
+          {[
+            { key: 'federal', label: 'Federal' },
+            { key: 'statewide', label: 'Statewide' },
+            { key: 'State Senate', label: 'State Senate' },
+            { key: 'State Assembly', label: 'State Assembly' },
+          ].map(({ key, label }) => {
+            const section = races.filter((r) => r.level === key);
+            if (!section.length) return null;
+            return (
+              <div key={key}>
+                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">{label}</h2>
+                <div className="flex flex-col gap-3">
+                  {section.map((race) => <RaceCard key={race.id} race={race} />)}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {groups && races.length === statewideRaces2026.length && (
         <p className="mt-4 text-gray-400 text-sm">No additional district races found for this address.</p>

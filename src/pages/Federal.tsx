@@ -9,11 +9,14 @@ export default function Federal() {
   const { data = [], isLoading, error } = useOfficials(fetchNYFederalLegislators, 'federal');
 
   const senate = data.filter((l) => l.chamber === 'U.S. Senate');
-  const house = data.filter((l) => l.chamber === 'U.S. House');
+  const house = data
+    .filter((l) => l.chamber === 'U.S. House')
+    .sort((a, b) => parseInt(a.district) - parseInt(b.district));
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">Federal — New York</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-1">Federal — New York</h1>
+      <p className="text-gray-500 mb-8">New York's 2 U.S. Senators and 26 House Representatives.</p>
 
       {isLoading && <Spinner />}
       {error && <p className="text-red-500 text-sm">{error.message}</p>}
