@@ -29,14 +29,16 @@ function OfficialRow({ official }: { official: StatewideOfficial }) {
         </div>
         <p className="text-xs text-gray-400 mt-0.5">{official.office}</p>
       </div>
-      <a
-        href={official.website}
-        target="_blank"
-        rel="noreferrer"
-        className="text-xs text-blue-600 hover:underline shrink-0"
-      >
-        Website
-      </a>
+      {official.website && (
+        <a
+          href={official.website}
+          target="_blank"
+          rel="noreferrer"
+          className="text-xs text-blue-600 hover:underline shrink-0"
+        >
+          Website
+        </a>
+      )}
     </div>
   );
 }

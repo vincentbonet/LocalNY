@@ -18,13 +18,36 @@ export default function Home() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">LocalNY</h1>
-      <p className="text-gray-500 mb-8">
-        Track every level of New York politics — from your school board to the U.S. Senate.
+      <h1 className="text-3xl font-bold text-gray-900 mb-1">Find your representatives</h1>
+      <p className="text-gray-500 mb-6">
+        Enter your New York address to see every elected official from your city council to Congress.
       </p>
-      <SearchBar onSearch={handleSearch} placeholder="Enter your NY address..." />
+      <SearchBar onSearch={handleSearch} placeholder="e.g. 123 Broadway, New York, NY" />
       {loading && <Spinner />}
       {error && <p className="mt-4 text-red-500 text-sm">{error}</p>}
+
+      {!loading && data.length === 0 && !error && (
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {[
+            { label: 'Federal', desc: 'Congress & U.S. Senate', to: '/federal' },
+            { label: 'Statewide', desc: 'Governor, AG, Comptroller', to: '/statewide' },
+            { label: 'State Legislature', desc: 'Senate & Assembly', to: '/state-legislature' },
+            { label: 'NYC Council', desc: '51 council districts', to: '/nyc' },
+            { label: 'County', desc: 'All 62 NY counties', to: '/county' },
+            { label: '2026 Midterms', desc: 'Races on your ballot', to: '/midterm' },
+          ].map(({ label, desc, to }) => (
+            <Link
+              key={to}
+              to={to}
+              className="border border-gray-200 rounded-lg p-3 hover:border-gray-400 hover:bg-gray-50 transition-colors"
+            >
+              <p className="font-medium text-sm text-gray-900">{label}</p>
+              <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
+            </Link>
+          ))}
+        </div>
+      )}
+
       {data.length > 0 && (
         <div className="mt-8 flex flex-col gap-6">
           {data.map((group) => (

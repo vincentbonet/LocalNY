@@ -9,6 +9,7 @@ import Spinner from '../components/ui/Spinner';
 import Badge from '../components/ui/Badge';
 import { usePageTitle } from '../hooks/usePageTitle';
 
+import 'leaflet/dist/leaflet.css';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -21,7 +22,7 @@ L.Icon.Default.mergeOptions({
 });
 
 const NY_CENTER: [number, number] = [42.9538, -75.5268];
-const NY_ZOOM = 7;
+const NY_ZOOM = 8;
 
 const LAYERS = [
   { label: 'Congressional', id: '12' },
