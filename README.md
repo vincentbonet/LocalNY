@@ -1,73 +1,28 @@
-# React + TypeScript + Vite
+# LocalNY
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web app for tracking every level of New York State politics — from your NYC Council member to your U.S. Senator — all from a single address lookup.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Address lookup** — enter any NY address and instantly see every elected official representing you, grouped by government level (Federal, State, City, County)
+- **Interactive district map** — visualize all NY congressional districts colored by incumbent party; click any district to see candidates and race details
+- **2026 midterm tracker** — browse upcoming House races across New York with candidate and incumbent info
+- **Multi-level coverage** — Federal, Statewide, NY State Legislature, NYC Council, Metro (MTA), and County officials
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React 19** + **TypeScript** + **Vite**
+- **Tailwind CSS** for styling
+- **React Router** for client-side routing
+- **TanStack Query** for data fetching and caching
+- **Leaflet** / **react-leaflet** for interactive maps
+- **Axios** for HTTP requests
 
-## Expanding the ESLint configuration
+## APIs Used
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| API | Purpose |
+|-----|---------|
+| [OpenStates API](https://v3.openstates.org) | State legislator lookup by coordinates |
+| [Nominatim (OpenStreetMap)](https://nominatim.openstreetmap.org) | Address geocoding |
+| [NYC Geoclient API](https://api.nyc.gov) | NYC Council district lookup by address |
+| [U.S. Census Bureau Geocoder](https://geocoding.geo.census.gov) | Congressional district lookup by coordinates |
