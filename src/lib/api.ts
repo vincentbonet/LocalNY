@@ -1,9 +1,9 @@
 import axios from 'axios';
 import type { Official } from '../types/official';
 
-export const openStatesApi = axios.create({
-  baseURL: 'https://v3.openstates.org',
-});
+const BACKEND = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
+
+const backendApi = axios.create({ baseURL: BACKEND });
 
 export async function geocodeAddress(address: string): Promise<{ lat: number; lng: number }> {
   const { data } = await axios.get('https://nominatim.openstreetmap.org/search', {
@@ -21,27 +21,17 @@ export interface OfficialGroup {
 
 export async function lookupByAddress(address: string): Promise<OfficialGroup[]> {
   const { lat, lng } = await geocodeAddress(address);
-  const { data } = await openStatesApi.get('/people.geo', {
-    params: {
-      lat,
-      lng,
-      apikey: import.meta.env.VITE_OPENSTATES_API_KEY,
-      include: 'contact_details,links',
-    },
-  });
+  const { data } = await backendApi.get('/api/officials', { params: { lat, lng } });
   return parseOpenStatesResponse(data);
 }
 
 function parseOpenStatesResponse(data: any): OfficialGroup[] {
   const grouped: Record<string, Official[]> = {};
-
   for (const person of data.results ?? []) {
     const role = person.current_role;
     if (!role) continue;
-
     const office = `${role.title} — District ${role.district}`;
     if (!grouped[office]) grouped[office] = [];
-
     grouped[office].push({
       name: person.name,
       party: person.party ?? 'Unknown',
@@ -51,20 +41,7 @@ function parseOpenStatesResponse(data: any): OfficialGroup[] {
       email: person.contact_details?.find((c: any) => c.type === 'email')?.value,
     } satisfies Official);
   }
-
   return Object.entries(grouped).map(([office, officials]) => ({ office, officials }));
-}
-
-export async function lookupNYLegislators(district: number, chamber: 'upper' | 'lower') {
-  const { data } = await openStatesApi.get('/people', {
-    params: {
-      jurisdiction: 'ocd-jurisdiction/country:us/state:ny/government',
-      district,
-      org_classification: chamber,
-      apikey: import.meta.env.VITE_OPENSTATES_API_KEY,
-    },
-  });
-  return data;
 }
 
 export interface Legislator {
@@ -77,16 +54,7 @@ export interface Legislator {
 }
 
 export async function fetchNYLegislators(chamber: 'upper' | 'lower'): Promise<Legislator[]> {
-  const { data } = await openStatesApi.get('/people', {
-    params: {
-      jurisdiction: 'ocd-jurisdiction/country:us/state:ny/government',
-      org_classification: chamber,
-      per_page: 50,
-      include: 'links',
-      apikey: import.meta.env.VITE_OPENSTATES_API_KEY,
-    },
-  });
-
+  const { data } = await backendApi.get('/api/legislators', { params: { chamber } });
   return (data.results ?? []).map((p: any) => ({
     name: p.name,
     party: p.party ?? 'Unknown',
@@ -98,16 +66,7 @@ export async function fetchNYLegislators(chamber: 'upper' | 'lower'): Promise<Le
 }
 
 export async function fetchNYFederalLegislators(): Promise<Legislator[]> {
-  const { data } = await openStatesApi.get('/people', {
-    params: {
-      jurisdiction: 'ocd-jurisdiction/country:us/government',
-      state: 'ny',
-      per_page: 50,
-      include: 'links',
-      apikey: import.meta.env.VITE_OPENSTATES_API_KEY,
-    },
-  });
-
+  const { data } = await backendApi.get('/api/federal-legislators');
   return (data.results ?? []).map((p: any) => ({
     name: p.name,
     party: p.party ?? 'Unknown',
@@ -121,70 +80,6 @@ export async function fetchNYFederalLegislators(): Promise<Legislator[]> {
 export interface NYCCouncilLookup {
   district: number;
   borough: string;
-}
-
-function parseNYCAddress(address: string): { houseNumber: string; street: string; borough: string } | null {
-  const boroughMap: Record<string, string> = {
-    'manhattan': 'manhattan',
-    'bronx': 'bronx',
-    'brooklyn': 'brooklyn',
-    'queens': 'queens',
-    'staten island': 'statenisland',
-  };
-
-  const lower = address.toLowerCase();
-  let borough = '';
-  for (const [name, code] of Object.entries(boroughMap)) {
-    if (lower.includes(name)) { borough = code; break; }
-  }
-  if (!borough) return null;
-
-  const match = address.match(/^(\d+)\s+(.+?)(?:,|$)/i);
-  if (!match) return null;
-
-  return { houseNumber: match[1], street: match[2].trim(), borough };
-}
-
-export async function lookupNYCCouncilDistrict(address: string): Promise<NYCCouncilLookup | null> {
-  const parsed = parseNYCAddress(address);
-  if (!parsed) return null;
-
-  const { data } = await axios.get('https://api.nyc.gov/geo/geoclient/v2/address.json', {
-    params: {
-      houseNumber: parsed.houseNumber,
-      street: parsed.street,
-      borough: parsed.borough,
-      app_id: import.meta.env.VITE_NYC_GEOCLIENT_APP_ID,
-      app_key: import.meta.env.VITE_NYC_GEOCLIENT_APP_KEY,
-    },
-  });
-
-  const result = data.address;
-  if (!result?.councilDistrict) return null;
-
-  return {
-    district: parseInt(result.councilDistrict),
-    borough: parsed.borough,
-  };
-}
-
-export async function lookupCongressionalDistrict(lat: number, lng: number): Promise<string | null> {
-  const { data } = await axios.get(
-    'https://geocoding.geo.census.gov/geocoder/geographies/coordinates',
-    {
-      params: {
-        x: lng,
-        y: lat,
-        benchmark: 'Public_AR_Current',
-        vintage: 'Current_Current',
-        layers: 'Congressional Districts',
-        format: 'json',
-      },
-    }
-  );
-  const districts = data.result?.geographies?.['Congressional Districts'];
-  if (!districts?.length) return null;
-  return districts[0].BASENAME;
 }
 
 export async function lookupNYCCouncilDistrictByCoords(lat: number, lng: number): Promise<number | null> {
@@ -213,3 +108,21 @@ export async function lookupNYCCouncilMember(address: string): Promise<number | 
   return lookupNYCCouncilDistrictByCoords(lat, lng);
 }
 
+export async function lookupCongressionalDistrict(lat: number, lng: number): Promise<string | null> {
+  const { data } = await axios.get(
+    'https://geocoding.geo.census.gov/geocoder/geographies/coordinates',
+    {
+      params: {
+        x: lng,
+        y: lat,
+        benchmark: 'Public_AR_Current',
+        vintage: 'Current_Current',
+        layers: 'Congressional Districts',
+        format: 'json',
+      },
+    }
+  );
+  const districts = data.result?.geographies?.['Congressional Districts'];
+  if (!districts?.length) return null;
+  return districts[0].BASENAME;
+}
