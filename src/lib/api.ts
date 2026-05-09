@@ -3,12 +3,13 @@ import type { Official } from '../types/official';
 
 const BACKEND = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
 
-const backendApi = axios.create({ baseURL: BACKEND });
+const backendApi = axios.create({ baseURL: BACKEND, timeout: 10000 });
 
 export async function geocodeAddress(address: string): Promise<{ lat: number; lng: number }> {
   const { data } = await axios.get('https://nominatim.openstreetmap.org/search', {
     params: { q: address, format: 'json', limit: 1 },
-    headers: { 'Accept-Language': 'en' },
+    headers: { 'Accept-Language': 'en', 'User-Agent': 'LocalNY/1.0' },
+    timeout: 10000,
   });
   if (!data.length) throw new Error('Address not found');
   return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
