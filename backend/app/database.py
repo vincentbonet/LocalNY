@@ -15,7 +15,10 @@ def get_pool() -> SimpleConnectionPool:
         _pool = SimpleConnectionPool(1, 10, dsn=os.getenv("DATABASE_URL"))
     return _pool 
 
-def get_connection(conn): 
+def get_conn():
+    return get_pool().getconn()
+
+def put_conn(conn):
     get_pool().putconn(conn)
 
 
