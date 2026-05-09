@@ -49,7 +49,7 @@ async def get_officials(
         try:
             r = await client.get(
                 f"{OPENSTATES_BASE}/people.geo",
-                params={"lat": lat, "lng": lng, "apikey": API_KEY, "include": "offices,links"},
+                params={"lat": lat, "lng": lng, "apikey": API_KEY, "include": "links"},
                 timeout=10,
             )
             r.raise_for_status()

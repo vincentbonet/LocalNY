@@ -37,8 +37,8 @@ function parseOpenStatesResponse(data: any): OfficialGroup[] {
       party: person.party ?? 'Unknown',
       website: person.links?.[0]?.url,
       photoUrl: person.image,
-      phone: person.offices?.[0]?.voice,
-      email: person.offices?.[0]?.email,
+      phone: undefined,
+      email: undefined,
     } satisfies Official);
   }
   return Object.entries(grouped).map(([office, officials]) => ({ office, officials }));
