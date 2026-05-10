@@ -54,7 +54,7 @@ export default function Midterm() {
 
   useEffect(() => {
     if (addressParam) lookup(addressParam);
-  }, []);
+  }, [addressParam]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const races = groups ? buildRaces(groups) : statewideRaces2026;
 

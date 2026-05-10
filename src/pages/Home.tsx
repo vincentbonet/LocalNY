@@ -39,7 +39,7 @@ export default function Home() {
             <Link
               key={to}
               to={to}
-              className="border border-gray-200 rounded-lg p-3 hover:border-gray-400 hover:bg-gray-50 transition-colors"
+              className="border border-gray-200 rounded-lg p-3 hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm transition-all"
             >
               <p className="font-medium text-sm text-gray-900">{label}</p>
               <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
@@ -60,7 +60,7 @@ export default function Home() {
                   <Link
                     key={official.name}
                     to={official.id ? `/politician/${encodeURIComponent(official.id)}` : '#'}
-                    className="flex items-center gap-3 border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-3 border border-gray-200 rounded-lg p-3 hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm transition-all"
                   >
                     {official.photoUrl ? (
                       <img src={official.photoUrl} alt={official.name} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />

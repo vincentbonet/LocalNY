@@ -1,29 +1,30 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
+import { Home, Map, Flag, Landmark, Building2, Building, Train, MapPin, CalendarDays } from 'lucide-react';
 
 const sections = [
   {
     label: null,
     links: [
-      { to: '/', label: 'Home' },
-      { to: '/map', label: 'District Map' },
+      { to: '/', label: 'Home', icon: Home },
+      { to: '/map', label: 'District Map', icon: Map },
     ],
   },
   {
     label: 'Officials',
     links: [
-      { to: '/federal', label: 'Federal' },
-      { to: '/statewide', label: 'Statewide' },
-      { to: '/state-legislature', label: 'State Legislature' },
-      { to: '/nyc', label: 'NYC Council' },
-      { to: '/metro', label: 'Metro Agencies' },
-      { to: '/county', label: 'County' },
+      { to: '/federal', label: 'Federal', icon: Flag },
+      { to: '/statewide', label: 'Statewide', icon: Landmark },
+      { to: '/state-legislature', label: 'State Legislature', icon: Building2 },
+      { to: '/nyc', label: 'NYC Council', icon: Building },
+      { to: '/metro', label: 'Metro Agencies', icon: Train },
+      { to: '/county', label: 'County', icon: MapPin },
     ],
   },
   {
     label: 'Elections',
     links: [
-      { to: '/midterm', label: '2026 Midterms' },
+      { to: '/midterm', label: '2026 Midterms', icon: CalendarDays },
     ],
   },
 ];
@@ -36,7 +37,9 @@ interface Props {
 export default function Sidebar({ open, onClose }: Props) {
   const location = useLocation();
 
-  useEffect(() => { onClose(); }, [location.pathname]);
+  useEffect(() => {
+    onClose();
+  }, [location.pathname, onClose]);
 
   return (
     <>
@@ -61,20 +64,25 @@ export default function Sidebar({ open, onClose }: Props) {
               </p>
             )}
             <div className="flex flex-col gap-0.5">
-              {section.links.map(({ to, label }) => (
+              {section.links.map(({ to, label, icon: Icon }) => (
                 <NavLink
                   key={to}
                   to={to}
                   end={to === '/'}
                   className={({ isActive }) =>
-                    `px-3 py-2 rounded text-sm font-medium transition-colors ${
+                    `flex items-center gap-2.5 px-3 py-2 rounded text-sm font-medium transition-colors ${
                       isActive
                         ? 'bg-gray-900 text-white'
                         : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                     }`
                   }
                 >
-                  {label}
+                  {({ isActive }) => (
+                    <>
+                      <Icon size={15} className={isActive ? 'text-white' : 'text-gray-400'} />
+                      {label}
+                    </>
+                  )}
                 </NavLink>
               ))}
             </div>

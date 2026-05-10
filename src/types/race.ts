@@ -1,5 +1,3 @@
-import type { Official } from './official';
-
 export type RaceStatus = 'upcoming' | 'active' | 'certified';
 
 export interface Candidate {
@@ -18,5 +16,4 @@ export interface Race {
   status: RaceStatus;
   electionDate: string;
   candidates: Candidate[];
-  currentHolder?: Official;
 }

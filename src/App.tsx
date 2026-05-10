@@ -20,11 +20,11 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-gray-50">
         <Header onMenuToggle={() => setMenuOpen((o) => !o)} menuOpen={menuOpen} />
         <div className="flex flex-1">
           <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
-          <main className="flex-1 p-6 flex flex-col">
+          <main className="flex-1 p-6 flex flex-col bg-white">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/map" element={<MapView />} />

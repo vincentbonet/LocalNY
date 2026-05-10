@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchNYLegislators } from '../lib/api';
 import { useOfficials } from '../hooks/useOfficials';
@@ -12,15 +12,15 @@ export default function StateLegislature() {
   const senate = useOfficials(() => fetchNYLegislators('upper'), 'senate');
   const assembly = useOfficials(() => fetchNYLegislators('lower'), 'assembly');
 
-  function filter<T extends { name: string; district: string }>(list: T[]): T[] {
+  function filterList<T extends { name: string; district: string }>(list: T[]): T[] {
     const q = query.toLowerCase();
-    return list
+    return [...list]
       .sort((a, b) => parseInt(a.district) - parseInt(b.district))
       .filter((l) => !q || l.name.toLowerCase().includes(q) || l.district.includes(q));
   }
 
-  const senateList = filter(senate.data ?? []);
-  const assemblyList = filter(assembly.data ?? []);
+  const senateList = useMemo(() => filterList(senate.data ?? []), [senate.data, query]);
+  const assemblyList = useMemo(() => filterList(assembly.data ?? []), [assembly.data, query]);
 
   return (
     <div>
@@ -67,11 +67,13 @@ export default function StateLegislature() {
 function LegislatorRow({ leg }: { leg: import('../lib/api').Legislator }) {
   const to = leg.id ? `/politician/${encodeURIComponent(leg.id)}` : '#';
   return (
-    <Link to={to} className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors">
+    <Link to={to} className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm transition-all">
       {leg.imageUrl ? (
         <img src={leg.imageUrl} alt={leg.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
       ) : (
-        <div className="w-9 h-9 rounded-full bg-gray-200 shrink-0" />
+        <div className="w-9 h-9 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0">
+          <span className="text-xs font-semibold text-gray-500">{leg.name.charAt(0)}</span>
+        </div>
       )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">

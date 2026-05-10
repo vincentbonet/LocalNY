@@ -8,7 +8,7 @@ interface Props {
 
 export default function Header({ onMenuToggle, menuOpen }: Props) {
   return (
-    <header className="bg-gray-900 px-6 py-3.5 flex items-center justify-between shrink-0">
+    <header className="bg-gray-900 px-6 py-3.5 flex items-center justify-between shrink-0 shadow-md">
       <div className="flex items-center gap-3">
         <button
           onClick={onMenuToggle}

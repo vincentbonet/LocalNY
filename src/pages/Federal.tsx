@@ -54,11 +54,13 @@ export default function Federal() {
 function FederalCard({ leg }: { leg: import('../lib/api').Legislator }) {
   const to = leg.id ? `/politician/${encodeURIComponent(leg.id)}` : '#';
   return (
-    <Link to={to} className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors">
+    <Link to={to} className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm transition-all">
       {leg.imageUrl ? (
         <img src={leg.imageUrl} alt={leg.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
       ) : (
-        <div className="w-9 h-9 rounded-full bg-gray-200 shrink-0" />
+        <div className="w-9 h-9 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0">
+          <span className="text-xs font-semibold text-gray-500">{leg.name.charAt(0)}</span>
+        </div>
       )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">

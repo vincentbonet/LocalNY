@@ -32,7 +32,7 @@ export default function County() {
 function CountyRow({ county }: { county: County }) {
   const exec = county.executive;
   return (
-    <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors">
+    <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm transition-all">
       <div className="flex-1 min-w-0">
         <span className="font-medium text-sm">{county.name} County</span>
         {exec && (

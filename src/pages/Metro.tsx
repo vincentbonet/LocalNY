@@ -9,7 +9,7 @@ export default function Metro() {
       <p className="text-gray-500 mb-8">Regional authorities serving the New York metropolitan area.</p>
       <div className="flex flex-col gap-6">
         {metroAgencies.map((agency) => (
-          <div key={agency.name} className="border border-gray-200 rounded-lg p-5">
+          <div key={agency.name} className="border border-gray-200 rounded-lg p-5 shadow-sm">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
                 <h2 className="font-semibold text-gray-900">{agency.name}</h2>

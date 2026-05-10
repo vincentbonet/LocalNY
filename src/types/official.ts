@@ -7,8 +7,4 @@ export interface Official {
     email?: string;
     website?: string;
     photoUrl?: string;
-    socialMedia?: {
-        twitter?: string;
-        facebook?: string;
-    }
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { councilMembers } from '../data/nyc-council-members';
 import Badge from '../components/ui/Badge';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -10,12 +10,15 @@ export default function NYC() {
   const [query, setQuery] = useState('');
   const q = query.toLowerCase();
 
-  const allMembers = Object.entries(councilMembers);
-  const filtered = q
-    ? allMembers.filter(([district, m]) =>
-        m.name.toLowerCase().includes(q) || district.includes(q) || m.borough.toLowerCase().includes(q)
-      )
-    : null;
+  const allMembers = useMemo(() => Object.entries(councilMembers), []);
+  const filtered = useMemo(
+    () => q
+      ? allMembers.filter(([district, m]) =>
+          m.name.toLowerCase().includes(q) || district.includes(q) || m.borough.toLowerCase().includes(q)
+        )
+      : null,
+    [allMembers, q]
+  );
 
   return (
     <div>
@@ -60,7 +63,7 @@ export default function NYC() {
 
 function MemberRow({ district, member }: { district: string; member: { name: string; party: string; borough: string; website?: string } }) {
   return (
-    <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors">
+    <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm transition-all">
       <div className="w-9 h-9 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0">
         <span className="text-xs font-bold text-gray-500">{district}</span>
       </div>
