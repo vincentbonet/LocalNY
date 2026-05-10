@@ -33,9 +33,7 @@ app = FastAPI(title="LocalNY API", version="1.0.0", lifespan=lifespan, redirect_
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-allowed_origins = [FRONTEND_URL]
-if os.getenv("ENVIRONMENT") != "production":
-    allowed_origins.append("http://localhost:5173")
+allowed_origins = [FRONTEND_URL, "http://localhost:5173"]
 
 app.add_middleware(
     CORSMiddleware,
