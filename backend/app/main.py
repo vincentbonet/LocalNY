@@ -111,6 +111,77 @@ async def get_legislators(
     return data
 
 
+@app.get("/api/person/{person_id}")
+@limiter.limit("30/minute")
+async def get_person(request: Request, person_id: str):
+    async with httpx.AsyncClient() as client:
+        try:
+            r = await client.get(
+                f"{OPENSTATES_BASE}/people/{person_id}",
+                params={"apikey": API_KEY, "include": "links,other_identifiers"},
+                timeout=10,
+            )
+            r.raise_for_status()
+        except httpx.HTTPError as e:
+            logger.error("OpenStates /people/{id} error: %s", e)
+            raise HTTPException(status_code=502, detail="External service unavailable")
+
+    p = r.json()
+    role = p.get("current_role") or {}
+    twitter = next(
+        (s["identifier"] for s in (p.get("other_identifiers") or []) if s.get("scheme") == "twitter"),
+        None,
+    )
+    return {
+        "id": p["id"],
+        "name": p["name"],
+        "party": p.get("party", "Unknown"),
+        "photoUrl": p.get("image"),
+        "email": p.get("email"),
+        "website": (p.get("links") or [{}])[0].get("url"),
+        "twitter": twitter,
+        "title": role.get("title", ""),
+        "district": str(role.get("district", "")),
+        "chamber": role.get("org_classification", ""),
+        "jurisdiction": p.get("jurisdiction", {}).get("name", ""),
+        "links": p.get("links", []),
+    }
+
+
+@app.get("/api/person/{person_id}/bills")
+@limiter.limit("20/minute")
+async def get_person_bills(request: Request, person_id: str):
+    async with httpx.AsyncClient() as client:
+        try:
+            r = await client.get(
+                f"{OPENSTATES_BASE}/bills",
+                params={
+                    "apikey": API_KEY,
+                    "sponsor_id": person_id,
+                    "per_page": 10,
+                    "sort": "-updated_at",
+                },
+                timeout=10,
+            )
+            r.raise_for_status()
+        except httpx.HTTPError as e:
+            logger.error("OpenStates /bills error: %s", e)
+            raise HTTPException(status_code=502, detail="External service unavailable")
+
+    results = r.json().get("results", [])
+    return [
+        {
+            "id": b["id"],
+            "title": b.get("title", ""),
+            "identifier": b.get("identifier", ""),
+            "status": (b.get("latest_action_description") or b.get("status") or ""),
+            "updatedAt": b.get("updated_at", ""),
+            "url": (b.get("sources") or [{}])[0].get("url"),
+        }
+        for b in results
+    ]
+
+
 @app.get("/api/federal-legislators")
 @limiter.limit("20/minute")
 async def get_federal_legislators(request: Request):

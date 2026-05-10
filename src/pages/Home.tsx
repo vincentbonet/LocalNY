@@ -57,30 +57,26 @@ export default function Home() {
               </h2>
               <div className="flex flex-col gap-2">
                 {group.officials.map((official) => (
-                  <div key={official.name} className="flex items-center gap-3 border border-gray-200 rounded-lg p-3">
-                    {official.photoUrl && (
-                      <img src={official.photoUrl} alt={official.name} className="w-10 h-10 rounded-full object-cover" />
+                  <Link
+                    key={official.name}
+                    to={official.id ? `/politician/${encodeURIComponent(official.id)}` : '#'}
+                    className="flex items-center gap-3 border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors"
+                  >
+                    {official.photoUrl ? (
+                      <img src={official.photoUrl} alt={official.name} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-sm font-medium text-gray-400 flex-shrink-0">
+                        {official.name.charAt(0)}
+                      </div>
                     )}
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <Badge party={official.party} />
                         <span className="font-medium text-sm">{official.name}</span>
                       </div>
-                      {official.phone && (
-                        <p className="text-xs text-gray-400 mt-0.5">{official.phone}</p>
-                      )}
-                      {official.email && (
-                        <a href={`mailto:${official.email}`} className="text-xs text-blue-600 hover:underline mt-0.5 block">
-                          {official.email}
-                        </a>
-                      )}
                     </div>
-                    {official.website && (
-                      <a href={official.website} target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline">
-                        Website
-                      </a>
-                    )}
-                  </div>
+                    <span className="text-xs text-gray-400">View →</span>
+                  </Link>
                 ))}
               </div>
             </div>

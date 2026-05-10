@@ -10,9 +10,9 @@ import StateLegislature from './pages/StateLegislature';
 import NYC from './pages/NYC';
 import Metro from './pages/Metro';
 import County from './pages/County';
-import Local from './pages/Local';
 import Midterm from './pages/Midterm';
 import MapView from './pages/MapView';
+import PoliticianProfile from './pages/PoliticianProfile';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -34,8 +34,8 @@ export default function App() {
               <Route path="/nyc" element={<NYC />} />
               <Route path="/metro" element={<Metro />} />
               <Route path="/county" element={<County />} />
-              <Route path="/local" element={<Local />} />
               <Route path="/midterm" element={<Midterm />} />
+              <Route path="/politician/:id" element={<PoliticianProfile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

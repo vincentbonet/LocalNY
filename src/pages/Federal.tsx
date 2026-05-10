@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { fetchNYFederalLegislators } from '../lib/api';
 import { useOfficials } from '../hooks/useOfficials';
 import Spinner from '../components/ui/Spinner';
@@ -51,8 +52,9 @@ export default function Federal() {
 }
 
 function FederalCard({ leg }: { leg: import('../lib/api').Legislator }) {
+  const to = leg.id ? `/politician/${encodeURIComponent(leg.id)}` : '#';
   return (
-    <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors">
+    <Link to={to} className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors">
       {leg.imageUrl ? (
         <img src={leg.imageUrl} alt={leg.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
       ) : (
@@ -67,16 +69,7 @@ function FederalCard({ leg }: { leg: import('../lib/api').Legislator }) {
           {leg.chamber} · {leg.district === 'Statewide' ? 'Statewide' : `District ${leg.district}`}
         </p>
       </div>
-      {leg.website && (
-        <a
-          href={leg.website}
-          target="_blank"
-          rel="noreferrer"
-          className="text-xs text-blue-600 hover:underline shrink-0"
-        >
-          Website
-        </a>
-      )}
-    </div>
+      <span className="text-xs text-gray-400 shrink-0">View →</span>
+    </Link>
   );
 }

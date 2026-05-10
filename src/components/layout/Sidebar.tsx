@@ -18,7 +18,6 @@ const sections = [
       { to: '/nyc', label: 'NYC Council' },
       { to: '/metro', label: 'Metro Agencies' },
       { to: '/county', label: 'County' },
-      { to: '/local', label: 'Local' },
     ],
   },
   {

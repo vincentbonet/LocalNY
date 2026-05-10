@@ -34,6 +34,7 @@ function parseOpenStatesResponse(data: any): OfficialGroup[] {
     const office = `${role.title} — District ${role.district}`;
     if (!grouped[office]) grouped[office] = [];
     grouped[office].push({
+      id: person.id,
       name: person.name,
       party: person.party ?? 'Unknown',
       website: person.links?.[0]?.url,
@@ -46,6 +47,7 @@ function parseOpenStatesResponse(data: any): OfficialGroup[] {
 }
 
 export interface Legislator {
+  id?: string;
   name: string;
   party: string;
   district: string;
@@ -57,6 +59,7 @@ export interface Legislator {
 export async function fetchNYLegislators(chamber: 'upper' | 'lower'): Promise<Legislator[]> {
   const { data } = await backendApi.get('/api/legislators', { params: { chamber } });
   return (data.results ?? []).map((p: any) => ({
+    id: p.id,
     name: p.name,
     party: p.party ?? 'Unknown',
     district: p.current_role?.district ?? '?',
@@ -69,6 +72,7 @@ export async function fetchNYLegislators(chamber: 'upper' | 'lower'): Promise<Le
 export async function fetchNYFederalLegislators(): Promise<Legislator[]> {
   const { data } = await backendApi.get('/api/federal-legislators');
   return (data.results ?? []).map((p: any) => ({
+    id: p.id,
     name: p.name,
     party: p.party ?? 'Unknown',
     district: p.current_role?.district ?? 'Statewide',
@@ -76,6 +80,40 @@ export async function fetchNYFederalLegislators(): Promise<Legislator[]> {
     imageUrl: p.image,
     website: p.links?.[0]?.url,
   }));
+}
+
+export interface PersonProfile {
+  id: string;
+  name: string;
+  party: string;
+  photoUrl?: string;
+  email?: string;
+  website?: string;
+  twitter?: string;
+  title: string;
+  district: string;
+  chamber: string;
+  jurisdiction: string;
+  links: { url: string; note: string }[];
+}
+
+export interface Bill {
+  id: string;
+  title: string;
+  identifier: string;
+  status: string;
+  updatedAt: string;
+  url?: string;
+}
+
+export async function fetchPersonProfile(personId: string): Promise<PersonProfile> {
+  const { data } = await backendApi.get(`/api/person/${encodeURIComponent(personId)}`);
+  return data;
+}
+
+export async function fetchPersonBills(personId: string): Promise<Bill[]> {
+  const { data } = await backendApi.get(`/api/person/${encodeURIComponent(personId)}/bills`);
+  return data;
 }
 
 export interface NYCCouncilLookup {
