@@ -117,16 +117,19 @@ async def get_person(request: Request, id: str = Query(...)):
     async with httpx.AsyncClient() as client:
         try:
             r = await client.get(
-                f"{OPENSTATES_BASE}/people/{id}",
-                params={"apikey": API_KEY, "include": "links,other_identifiers"},
+                f"{OPENSTATES_BASE}/people",
+                params=[("id", id), ("apikey", API_KEY), ("include", "links"), ("include", "other_identifiers")],
                 timeout=10,
             )
             r.raise_for_status()
         except httpx.HTTPError as e:
-            logger.error("OpenStates /people/{id} error: %s", e)
+            logger.error("OpenStates /people error: %s", e)
             raise HTTPException(status_code=502, detail="External service unavailable")
 
-    p = r.json()
+    results = r.json().get("results", [])
+    if not results:
+        raise HTTPException(status_code=404, detail="Person not found")
+    p = results[0]
     role = p.get("current_role") or {}
     twitter = next(
         (s["identifier"] for s in (p.get("other_identifiers") or []) if s.get("scheme") == "twitter"),
