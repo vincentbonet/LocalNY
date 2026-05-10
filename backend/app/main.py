@@ -29,7 +29,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="LocalNY API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="LocalNY API", version="1.0.0", lifespan=lifespan, redirect_slashes=False)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
