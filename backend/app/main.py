@@ -111,7 +111,7 @@ async def get_legislators(
     return data
 
 
-@app.get("/api/person/{person_id}")
+@app.get("/api/person/{person_id:path}")
 @limiter.limit("30/minute")
 async def get_person(request: Request, person_id: str):
     async with httpx.AsyncClient() as client:
@@ -148,7 +148,7 @@ async def get_person(request: Request, person_id: str):
     }
 
 
-@app.get("/api/person/{person_id}/bills")
+@app.get("/api/person/{person_id:path}/bills")
 @limiter.limit("20/minute")
 async def get_person_bills(request: Request, person_id: str):
     async with httpx.AsyncClient() as client:
