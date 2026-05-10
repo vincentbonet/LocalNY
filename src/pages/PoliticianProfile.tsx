@@ -19,6 +19,7 @@ export default function PoliticianProfile() {
     queryKey: ['person-bills', personId],
     queryFn: () => fetchPersonBills(personId),
     enabled: !!personId,
+    retry: false,
   });
 
   usePageTitle(profile?.name ?? 'Politician Profile');

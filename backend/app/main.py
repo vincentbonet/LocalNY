@@ -162,7 +162,7 @@ async def get_person_bills(request: Request, id: str = Query(...)):
                     "per_page": 10,
                     "sort": "-updated_at",
                 },
-                timeout=10,
+                timeout=20,
             )
             r.raise_for_status()
         except httpx.HTTPError as e:
