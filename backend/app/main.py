@@ -111,13 +111,13 @@ async def get_legislators(
     return data
 
 
-@app.get("/api/person/{person_id:path}")
+@app.get("/api/person")
 @limiter.limit("30/minute")
-async def get_person(request: Request, person_id: str):
+async def get_person(request: Request, id: str = Query(...)):
     async with httpx.AsyncClient() as client:
         try:
             r = await client.get(
-                f"{OPENSTATES_BASE}/people/{person_id}",
+                f"{OPENSTATES_BASE}/people/{id}",
                 params={"apikey": API_KEY, "include": "links,other_identifiers"},
                 timeout=10,
             )
@@ -148,16 +148,16 @@ async def get_person(request: Request, person_id: str):
     }
 
 
-@app.get("/api/person/{person_id:path}/bills")
+@app.get("/api/person/bills")
 @limiter.limit("20/minute")
-async def get_person_bills(request: Request, person_id: str):
+async def get_person_bills(request: Request, id: str = Query(...)):
     async with httpx.AsyncClient() as client:
         try:
             r = await client.get(
                 f"{OPENSTATES_BASE}/bills",
                 params={
                     "apikey": API_KEY,
-                    "sponsor_id": person_id,
+                    "sponsor_id": id,
                     "per_page": 10,
                     "sort": "-updated_at",
                 },

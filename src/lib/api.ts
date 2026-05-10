@@ -107,12 +107,12 @@ export interface Bill {
 }
 
 export async function fetchPersonProfile(personId: string): Promise<PersonProfile> {
-  const { data } = await backendApi.get(`/api/person/${encodeURIComponent(personId)}`);
+  const { data } = await backendApi.get('/api/person', { params: { id: personId } });
   return data;
 }
 
 export async function fetchPersonBills(personId: string): Promise<Bill[]> {
-  const { data } = await backendApi.get(`/api/person/${encodeURIComponent(personId)}/bills`);
+  const { data } = await backendApi.get('/api/person/bills', { params: { id: personId } });
   return data;
 }
 
